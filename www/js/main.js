@@ -62,7 +62,7 @@ var home = {
                 var path = data.path
                 $('#kakeicyan').empty();
                 path.some(function(val,index){
-                    $('#kakeicyan').append('<img src="' +val+ '" style="position:absolute" height=80%>');
+                    $('#kakeicyan').append('<img src="' +val+ '" class="kakeicyan-img">');
                 })
             } else {
                 console.log("error");
@@ -95,7 +95,7 @@ var home = {
                 var path = data.path
                 $('#kakeicyan').empty();
                 path.some(function(val,index){
-                    $('#kakeicyan').append('<img src=""${val}"" style=""position:absolute"">');
+                    $('#kakeicyan').append('<img src=""${val}"" class=""kakeicyan-img"">');
                 })
             } else {
                 console.log("error");
