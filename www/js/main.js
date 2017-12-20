@@ -48,11 +48,62 @@ var home = {
     //画面の初期化
     initialize: function() {
         $('#budget').text(window.localStorage.getItem("budget"));
+        $.ajax({
+            url:'https://kakeigakuen.xyz/api/image',
+            type:'POST',
+            dataType: 'json',
+            data:{
+                'token':window.localStorage.getItem("token")
+            }
+        })
+        .done(function(data){
+            console.log(data);
+            if (data.token != "error") {
+                var path = data.path
+                $('#kakeicyan').empty();
+                path.some(function(val,index){
+                    $('#kakeicyan').append('<img src="' +val+ '" style="position:absolute" height=80%>');
+                })
+            } else {
+                console.log("error");
+            }
+        })
+        .fail(function(data){
+            console.log(data);
+        });
     },
 
     //予算の更新
     budget_update: function() {
         $('#budget').text(window.localStorage.getItem("budget"));
+    },
+
+    //かけいちゃんの描画
+    draw_chara: function() {
+        //まずはajaxで画像のpathをうけとる
+        $.ajax({
+            url:'https://kakeigakuen.xyz/api/image',
+            type:'POST',
+            dataType: 'json',
+            data:{
+                'token':window.localStorage.getItem("token")
+            }
+        })
+        .done(function(data){
+            console.log(data);
+            if (data.token != "error") {
+                var path = data.path
+                $('#kakeicyan').empty();
+                path.some(function(val,index){
+                    $('#kakeicyan').append('<img src=""${val}"" style=""position:absolute"">');
+                })
+            } else {
+                console.log("error");
+            }
+        })
+        .fail(function(data){
+            console.log(data);
+        });
     }
 }
 
