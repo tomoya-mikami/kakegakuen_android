@@ -95,7 +95,7 @@ var home = {
                 var path = data.path
                 $('#kakeicyan').empty();
                 path.some(function(val,index){
-                    $('#kakeicyan').append('<img src=""${val}"" class=""kakeicyan-img"">');
+                    $('#kakeicyan').append('<img src="' +val+ '" class="kakeicyan-img">');
                 })
             } else {
                 console.log("error");
@@ -139,4 +139,8 @@ $('#post').click(function(){
 $('#logout').click(function(){
     window.localStorage.clear();
     window.location.href = "index.html";
+});
+
+$('#closet').click(function(){
+    home.draw_chara();
 });
