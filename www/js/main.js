@@ -43,34 +43,13 @@ var app = {
     }
 };
 
+//画面上の操作で行うことをまとめたクラス
 var home = {
 
     //画面の初期化
     initialize: function() {
-        $('#budget').text(window.localStorage.getItem("budget"));
-        $.ajax({
-            url:'https://kakeigakuen.xyz/api/image',
-            type:'POST',
-            dataType: 'json',
-            data:{
-                'token':window.localStorage.getItem("token")
-            }
-        })
-        .done(function(data){
-            console.log(data);
-            if (data.token != "error") {
-                var path = data.path
-                $('#kakeicyan').empty();
-                path.some(function(val,index){
-                    $('#kakeicyan').append('<img src="' +val+ '" class="kakeicyan-img">');
-                })
-            } else {
-                console.log("error");
-            }
-        })
-        .fail(function(data){
-            console.log(data);
-        });
+        this.budget_update();
+        this.draw_chara();
     },
 
     //予算の更新
@@ -104,38 +83,41 @@ var home = {
         .fail(function(data){
             console.log(data);
         });
+    },
+
+    //商品の登録
+    post_book: function() {
+        console.log('ajax')
+        $.ajax({
+            url:'https://kakeigakuen.xyz/api/books',
+            type:'POST',
+            dataType: 'json',
+            data:{
+                'costs':$('#costs').val(),
+                'token':window.localStorage.getItem("token")
+            }
+        })
+        .done(function(data){
+            console.log(data);
+            if (data.token != "error") {
+                window.localStorage.setItem('budget', data.budget);
+                window.localStorage.setItem('token', data.token);
+                home.budget_update();
+            } else {
+                console.log("error");
+            }
+        })
+        .fail(function(data){
+            console.log(data);
+        });
     }
 }
 
-app.initialize();
-home.initialize();
-
-//jqueryコード
+//ボタンクリック時のイベント
 $('#post').click(function(){
-    console.log('ajax')
-    $.ajax({
-        url:'https://kakeigakuen.xyz/api/books',
-        type:'POST',
-        dataType: 'json',
-        data:{
-            'costs':$('#costs').val(),
-            'token':window.localStorage.getItem("token")
-        }
-    })
-    .done(function(data){
-        console.log(data);
-        if (data.token != "error") {
-            window.localStorage.setItem('budget', data.budget);
-            window.localStorage.setItem('token', data.token);
-            home.budget_update();
-        } else {
-            console.log("error");
-        }
-    })
-    .fail(function(data){
-        console.log(data);
-    });
+    home.post_book();
 });
+
 $('#logout').click(function(){
     window.localStorage.clear();
     window.location.href = "index.html";
@@ -144,3 +126,7 @@ $('#logout').click(function(){
 $('#closet').click(function(){
     home.draw_chara();
 });
+
+//初期化
+app.initialize();
+home.initialize();
