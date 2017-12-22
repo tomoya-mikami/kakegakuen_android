@@ -45,34 +45,6 @@ var app = {
 
 var home = {
 
-    //画面の初期化
-    initialize: function() {
-        $('#budget').text(window.localStorage.getItem("budget"));
-        $.ajax({
-            url:'https://kakeigakuen.xyz/api/image',
-            type:'POST',
-            dataType: 'json',
-            data:{
-                'token':window.localStorage.getItem("token")
-            }
-        })
-        .done(function(data){
-            console.log(data);
-            if (data.token != "error") {
-                var path = data.path
-                $('#kakeicyan').empty();
-                path.some(function(val,index){
-                    $('#kakeicyan').append('<img src="' +val+ '" class="kakeicyan-img">');
-                })
-            } else {
-                console.log("error");
-            }
-        })
-        .fail(function(data){
-            console.log(data);
-        });
-    },
-
     //予算の更新
     budget_update: function() {
         $('#budget').text(window.localStorage.getItem("budget"));
@@ -104,38 +76,97 @@ var home = {
         .fail(function(data){
             console.log(data);
         });
+    },
+
+    startRecognition: function(){
+        window.plugins.speechRecognition.startListening(function(result){
+            // 入力結果をインプットに出力する
+            console.log(result);
+            $('#costs').val(result);
+        }, function(err){
+            console.error(err);
+        }, {
+            language: "en-US",
+            showPopup: true
+        });
+    },
+
+    //音声認識
+    speach_rec: function() {
+        window.plugins.speechRecognition.isRecognitionAvailable(function(available){
+            if(!available){
+                console.log("音声入力を利用できません");
+                $('#costs').val("音声入力を利用できません");
+            }
+        
+            // マイクの許可を要求
+            window.plugins.speechRecognition.hasPermission(function (isGranted){
+                if(isGranted){
+                    this.startRecognition();
+                }else{
+                    // 許可をリクエスト
+                    window.plugins.speechRecognition.requestPermission(function (){
+                        // 大丈夫なら録音開始
+                        this.startRecognition();
+                    }, function (err){
+                        console.log(err);
+                    });
+                }
+            }, function(err){
+                console.log(err);
+            });
+        }, function(err){
+            console.log(err);
+        });
+    },
+
+    //post
+    post_book: function() {
+        console.log('ajax')
+        $.ajax({
+            url:'https://kakeigakuen.xyz/api/books',
+            type:'POST',
+            dataType: 'json',
+            data:{
+                'costs':$('#costs').val(),
+                'token':window.localStorage.getItem("token")
+            }
+        })
+        .done(function(data){
+            console.log(data);
+            if (data.token != "error") {
+                window.localStorage.setItem('budget', data.budget);
+                window.localStorage.setItem('token', data.token);
+                home.budget_update();
+            } else {
+                console.log("error");
+            }
+        })
+        .fail(function(data){
+            console.log(data);
+        });    
+    }
+}
+
+var home_initialized = {
+    initialize: function() {
+        home.budget_update();
+        home.draw_chara();
     }
 }
 
 app.initialize();
-home.initialize();
+home_initialized.initialize();
 
-//jqueryコード
+//ボタンイベント
 $('#post').click(function(){
-    console.log('ajax')
-    $.ajax({
-        url:'https://kakeigakuen.xyz/api/books',
-        type:'POST',
-        dataType: 'json',
-        data:{
-            'costs':$('#costs').val(),
-            'token':window.localStorage.getItem("token")
-        }
-    })
-    .done(function(data){
-        console.log(data);
-        if (data.token != "error") {
-            window.localStorage.setItem('budget', data.budget);
-            window.localStorage.setItem('token', data.token);
-            home.budget_update();
-        } else {
-            console.log("error");
-        }
-    })
-    .fail(function(data){
-        console.log(data);
-    });
+    home.post_book();
 });
+
+$('#speach').click(function(){
+    home.speach_rec();
+});
+
 $('#logout').click(function(){
     window.localStorage.clear();
     window.location.href = "index.html";
