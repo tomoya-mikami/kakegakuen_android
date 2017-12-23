@@ -9,6 +9,12 @@
   "installed_plugins": {
     "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "io.cordova.hellocordova"
+    },
+    "cordova-plugin-tts": {
+      "PACKAGE_NAME": "io.cordova.hellocordova"
+    },
+    "phonegap-plugin-speech-recognition": {
+      "PACKAGE_NAME": "io.cordova.hellocordova"
     }
   },
   "dependent_plugins": {}

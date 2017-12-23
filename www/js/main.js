@@ -113,6 +113,18 @@ var home = {
     }
 }
 
+//音声入力系をまとめたクラス
+var speach = {
+    recode = function() {
+        var recognition = new SpeechRecognition();
+        recognition.onresult = function(event) {
+            if (event.results.length > 0) {
+                $('#costs').val(event.results[0][0].transcript);
+            }
+        };
+    }
+}
+
 //ボタンクリック時のイベント
 $('#post').click(function(){
     home.post_book();
@@ -125,6 +137,10 @@ $('#logout').click(function(){
 
 $('#closet').click(function(){
     home.draw_chara();
+});
+
+$('#speech').click(function(){
+    speech.recode();
 });
 
 //初期化
